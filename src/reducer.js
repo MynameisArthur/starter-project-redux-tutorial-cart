@@ -8,22 +8,54 @@ const initialStore = {
   
 function reducer(state,action)
 {
-  console.log({state,action});
-  if(action.type === DECREASE)
-  {
-    return {
-      ...state,
-      count: state.count - 1
-    };
-  }
-  if(action.type === INCREASE)
-  {
-    return {
-      ...state,
-      count: state.count + 1
-    };
-  }
-  return state;
+  let tempCart = [];
+  switch(action.type)
+  {    
+    case DECREASE:    
+    let item = state.cart.find((item)=>item.id === action.payload.id); 
+    if(item.amount === 1)
+    {
+      tempCart = state.cart.filter(cartItem=>cartItem.id !== item.id);
+      
+    }else{
+        tempCart = state.cart.map((cartItem)=>{
+        if(cartItem.id === action.payload.id)
+        {
+          return {...cartItem,amount: cartItem.amount - 1};        
+        }
+        return cartItem;
+      });
+    }
+
+      return {
+        ...state,
+        cart: tempCart
+      };     
+    case INCREASE:      
+      tempCart = state.cart.map((cartItem)=>{
+        if(cartItem.id === action.payload.id)         
+        {
+          cartItem = {...cartItem,amount: cartItem.amount + 1};
+        }
+        return cartItem;
+      });
+      return {
+        ...state,
+        cart: tempCart
+      };
+    case REMOVE:        
+      return {
+        ...state,
+        cart: state.cart.filter(cartItem=>cartItem.id !== action.payload.id)
+      };
+    case CLEAR_CART:
+      return {
+        ...state,
+        cart: []
+      };
+    default:
+      return state;
+  }   
 }
 
 export default reducer;
